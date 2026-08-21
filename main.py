@@ -36,7 +36,7 @@ if st.button("Enter!"):
             
             try:
                 response = client.models.generate_content(
-                    model="gemini-2.0-flash",
+                    model="gemini-3.6-flash",
                     contents=prompt
                 )
                 st.success("Done! Good luck on your application! 😉🎉")
