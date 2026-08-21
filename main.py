@@ -14,7 +14,13 @@ userSkills = st.text_area("Type or paste key skills, qualifications, or experien
 if st.button("Enter!"):
     if jobDescription and userSkills:
         with st.spinner("Thinking... 🤔"):
-            api_key = os.environ.get("GEMINI_API_KEY")
+            # Fetch API key safely across both local and deployed environments
+            api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+
+            if not api_key:
+                st.error("API Key not found! Please add GEMINI_API_KEY to your Streamlit Secrets.")
+                st.stop()
+
             client = genai.Client(api_key=api_key)
 
             prompt = (
@@ -22,15 +28,15 @@ if st.button("Enter!"):
                 "Assess if there is a match between the candidate's skills and the job descriptions.\n"
                 "Thoroughly highlight what skills and experiences are matching and what is missing between the candidate and job description\n"
                 "Assess if the candidate's experiences are relevant and a good fit for the job.\n"
-                "Return the results in two markdown tables: one for the interview questions, and the other for the match with two columns 'Aligned' and 'Unaligned\n'"
+                "Return the results in two markdown tables: one for the interview questions, and the other for the match with two columns 'Aligned' and 'Unaligned'\n"
                 "Ensure the explanations are thoroughly detailed.\n\n"
                 f"Job Description:\n{jobDescription}\n\n"
                 f"Candidate skills:\n{userSkills}\n\n"
-                )
+            )
             
             try:
                 response = client.models.generate_content(
-                    model="gemini-3-flash-preview",
+                    model="gemini-2.5-flash",
                     contents=prompt
                 )
                 st.success("Done! Good luck on your application! 😉🎉")
@@ -39,10 +45,3 @@ if st.button("Enter!"):
                 st.error(f"Error: {e}")
     else:
         st.warning("At least one of the text fields are missing information. 😔")
-
-
-      
-
-
-
-
